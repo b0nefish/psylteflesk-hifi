@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Psylteflesk Hi-Fi</title>
+  </head>
+  <body>
+    <button id="gen-btn" disabled>Generate &amp; Play</button><br>
+    <audio id="player" controls></audio>
+    <script>
+      function onRuntimeInitialized() {
+        const btn = document.getElementById('gen-btn')
+        btn.disabled = false
+        
+        btn.addEventListener('click', () => {
+          const ptr = Module.ccall('render')
+          const wavData = new Uint8Array(Module.HEAPU8.buffer, ptr, 0xc8002c)
+          const blob = new Blob([wavData], { type: 'audio/wav' })
+          const url = URL.createObjectURL(blob)
+          const player = document.getElementById('player')
+          player.src = url
+          player.play()
+        })
+      }
+    
+      var Module = { onRuntimeInitialized }
+    </script>
+    <script async src="lyd.min.js"></script>
+  </body>
+</html>
